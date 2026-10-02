@@ -22,11 +22,17 @@ jobs:
         cache: 'maven'
 
     - name: Install Playwright Browsers and OS Dependencies
-      run: mvn exec:java -e -Dexec.mainClass=com.microsoft.playwright.CLI -Dexec.args="install --with-deps"
+      run: mvn exec:java -e -Dexec.mainClass=com.microsoft.playwright.CLI -Dexec.args="install --with-deps" -Dexec.classpathScope=test
+
+    - name: Create .env file for CI
+      run: |
+        echo "OPENROUTER_API_KEY=${{ secrets.OPENROUTER_API_KEY }}" > .env
+        echo "BASE_URL=https://the-internet.herokuapp.com" >> .env
+        echo "API_URL=https://jsonplaceholder.typicode.com" >> .env
+        echo "TEST_USERNAME=tomsmith" >> .env
+        echo "TEST_PASSWORD=SuperSecretPassword!" >> .env
 
     - name: Run API and UI Tests
-      env:
-        OPENROUTER_API_KEY: ${{ secrets.OPENROUTER_API_KEY }}
       run: mvn clean test
 
     - name: Upload HTML Report & Screenshots
