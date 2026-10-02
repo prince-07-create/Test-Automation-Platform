@@ -45,6 +45,7 @@ public class BaseTest {
     void createContextAndPage() {
         context = browser.newContext();
         page = context.newPage();
+        page.setDefaultNavigationTimeout(90000);
     }
 
 }
