@@ -5,73 +5,135 @@
 
 ---
 
-## 📖 What is this?
-This is a modern, highly scalable **Test Automation Framework** built from the ground up using **Java**, **Playwright**, and **JUnit 5**. 
+## 📌 Project Overview
+This project is an advanced, scalable test automation framework built to handle both Web UI and REST API testing. It differentiates itself from standard testing suites by acting as an intelligent "robotic QA engineer"—capable of not only executing tests rapidly but also automatically diagnosing the root cause of any failures using Artificial Intelligence (OpenRouter/Nemotron). 
 
-Unlike standard testing suites, this framework features a custom-built **AI Diagnostic Engine** powered by OpenRouter. It doesn't just tell you *that* a test failed—it intercepts the failure, takes a screenshot, analyzes the stack trace, and explains exactly *why* it failed and *how* to fix it.
+## 🚨 Problem Statement
+In traditional QA environments, continuous integration pipelines are frequently blocked by flaky tests, ambiguous failure logs, or unexpected DOM changes. Automation engineers spend a significant portion of their time reading cryptic Java stack traces, reproducing bugs manually, and staring at failed pipelines just to figure out *why* a test failed. This manual triage creates a massive bottleneck in software delivery.
 
-## 🎯 What problem does it solve?
-In traditional QA automation, a failed test pipeline generates cryptic Java exceptions. Automation engineers often spend hours debugging false positives, network timeouts, or hidden DOM changes just to figure out what went wrong.
+## 💡 Solution
+This framework solves the "Triage Bottleneck" by leveraging AI. When a test fails, the framework immediately intercepts the error, captures the visual state of the application, and bundles the context. It then queries a Large Language Model (LLM) which analyzes the stack trace and outputs a plain-English, actionable root-cause analysis directly into the console. What used to take 30 minutes of manual debugging now takes 5 seconds.
 
-**This framework solves the "Triage Bottleneck" by:**
-1. Eliminating flaky waits using Playwright's native auto-waiting architecture.
-2. Automatically capturing visual evidence (screenshots) the exact millisecond a failure occurs.
-3. Using Artificial Intelligence to translate complex stack traces into plain-English root-cause analysis, saving teams hundreds of debugging hours.
-4. Integrating directly into a CI/CD pipeline, catching bugs before they ever reach production.
+## 📐 Architecture
+The framework is designed with strict adherence to industry best practices:
+* **Page Object Model (POM):** UI logic and locators are abstracted into dedicated Page classes, keeping tests clean and maintainable.
+* **JUnit 5 Extensions:** Lifecycle hooks (like `@BeforeAll` and `TestWatcher`) are utilized to manage browser contexts and intercept failures without cluttering test methods.
+* **Environment Isolation:** Zero hardcoded secrets. All environments and credentials are provided dynamically via `.env` files.
+* **Unified Pipeline:** Both API and UI tests share the same execution engine, generating a single, unified HTML report.
 
-## ⚙️ How does it work?
-The framework is built on a strict **Page Object Model (POM)** architecture and relies on several advanced integrations:
-* **UI Automation:** Uses Playwright to simulate user interactions across modern browsers. It natively handles shadow DOMs, iframes, and dynamic content without hardcoded `Thread.sleep()` commands.
-* **API Validation:** Uses Playwright's `APIRequestContext` to securely validate backend REST APIs.
-* **AI Interception (`AiTestWatcher`):** A custom JUnit 5 Extension that listens for test failures. Upon failure, it securely bundles the error context and sends it to the **OpenRouter LLM API** to generate an immediate diagnostic report in the console.
-* **Secure Configuration:** Zero hardcoded secrets. All environment variables and API keys are strictly managed via a `.env` configuration file.
-* **Continuous Integration:** Fully containerized via **GitHub Actions** (`tests.yml`) to execute headlessly on Ubuntu cloud servers on every code push.
+## ⭐ Features
+- **Auto-Waiting UI Automation:** Powered by Playwright, eliminating the need for `Thread.sleep()` or explicit waits.
+- **Integrated API Testing:** Built-in REST API validation using Playwright's `APIRequestContext`.
+- **Intelligent Error Handling:** Custom `AiTestWatcher` intercepts failures and fetches AI diagnostics.
+- **Visual Evidence Logging:** Auto-captures high-resolution screenshots the exact millisecond a failure occurs.
+- **Cloud-Native CI/CD:** Runs completely headlessly on Ubuntu cloud servers via GitHub Actions on every push.
 
-## 🛠️ Technology Stack
-* **Language:** Java 17
-* **Core Engine:** Microsoft Playwright
-* **Test Runner:** JUnit 5 / Maven Surefire
-* **AI Integration:** OpenRouter API (Nemotron/Llama LLMs)
-* **CI/CD:** GitHub Actions
-* **Reporting:** Maven Surefire HTML Plugin
+## 🛠️ Tech Stack
+- **Language:** Java 17
+- **Automation Engine:** Microsoft Playwright (Java)
+- **Test Runner:** JUnit 5
+- **Build Tool:** Maven
+- **AI Integration:** OpenRouter API (Nemotron/Llama LLMs)
+- **Reporting:** Maven Surefire HTML Plugin
+- **CI/CD:** GitHub Actions
 
-## 🚀 How to Run & Evaluate
+## 🧪 Test Coverage
+The current test suite validates both frontend interactions and backend responses:
+- **UI Tests (`AuthUiTest`)**: Validates positive and negative login scenarios on public sandbox sites.
+- **API Tests (`ApiValidationTest`)**: Validates successful REST payloads (`200 OK`) and handles endpoint unavailability (`404 Not Found`).
 
-### Local Setup
+## 🧠 AI Failure Diagnosis Flow
+1. **Execution:** JUnit runs the test suite.
+2. **Failure:** A test assertion fails or a timeout occurs.
+3. **Interception:** The custom `AiTestWatcher` catches the `Throwable` exception.
+4. **Visual Capture:** The watcher takes a screenshot of the exact failure state.
+5. **AI Request:** The watcher bundles the test name and error message and sends it via HTTP to OpenRouter.
+6. **Diagnosis:** The AI returns a plain-English explanation of why the test failed and how to fix it, printing it directly to the console.
+
+## 📁 Project Structure
+```text
+project/
+├── src/main/java/com/automation/
+│   ├── ai/           # OpenRouter LLM API Client
+│   ├── config/       # Environment & Secrets management (.env parser)
+│   └── pages/        # Page Object Models (e.g., LoginPage)
+├── src/test/java/com/automation/tests/
+│   ├── api/          # REST API Tests
+│   ├── base/         # Test fixtures (BaseTest, AiTestWatcher)
+│   └── ui/           # UI End-to-End Tests
+├── reports/
+│   └── screenshots/  # Automatically captured on test failure
+├── .github/workflows/# GitHub Actions CI/CD Pipeline
+├── .env.example      # Template for environment variables
+└── pom.xml           # Maven dependencies and plugins
+```
+
+## ⚙️ Setup
 1. **Clone the repository:**
    ```bash
    git clone https://github.com/YourUsername/Test-Automation-Platform.git
    cd Test-Automation-Platform
    ```
-2. **Configure your environment:**
-   Copy `.env.example` to `.env` and add your secure variables (including your OpenRouter API Key for AI diagnostics).
+2. **Install dependencies:**
    ```bash
-   cp .env.example .env
+   mvn clean install -DskipTests
    ```
-3. **Download Playwright Browsers:**
-   Install the necessary browser binaries (Chromium, Firefox, WebKit):
+3. **Install Playwright Browsers:**
    ```bash
    npx playwright install --with-deps
    ```
-4. **Execute the Suite:**
-   Run all UI and API tests:
-   ```bash
-   mvn clean test
-   ```
-5. **View the Reports:**
-   After execution, open the generated HTML dashboard to view the test matrix:
-   ```bash
-   start target/site/surefire-report.html
-   ```
-   *Any generated failure screenshots will be saved in `reports/screenshots/`.*
 
-## ☁️ CI/CD Pipeline (GitHub Actions)
-This project is configured for Continuous Integration. Every time code is pushed to the `main` branch:
-1. GitHub provisions a secure Ubuntu cloud runner.
-2. The pipeline dynamically injects repository secrets to generate the `.env` configuration.
-3. Playwright natively installs Linux OS dependencies and browsers.
-4. The test suite executes in `headless` mode.
-5. HTML test reports and AI screenshots are packaged and uploaded as downloadable CI Artifacts.
+## 🔐 Configuration
+Copy the provided `.env.example` file to create your local `.env` file. You must add your OpenRouter API Key for the AI diagnostics to function.
+```bash
+cp .env.example .env
+```
+*Note: `.env` is safely added to `.gitignore` to prevent secret leakage.*
 
----
-*Built with ❤️ to demonstrate modern quality engineering and AI-augmented software testing.*
+## ▶️ Running Tests
+To execute the entire test suite (API and UI) locally:
+```bash
+mvn clean test
+```
+
+## 📊 Reporting
+Once tests finish, Maven automatically generates a rich HTML report detailing passes, failures, and execution times.
+To view the report, open the following file in any browser:
+```bash
+start target/site/surefire-report.html
+```
+
+## ☁️ CI/CD
+This project features a fully automated Continuous Integration pipeline using **GitHub Actions**. 
+On every push to the `main` branch, GitHub servers will:
+1. Spin up an `ubuntu-latest` runner.
+2. Set up Java 17 and download Maven dependencies.
+3. Dynamically inject your repository secrets to generate the `.env` file securely.
+4. Install Playwright Linux dependencies natively via `npx`.
+5. Execute the tests in headless mode.
+6. Upload the HTML Report and Failure Screenshots as downloadable Artifacts.
+
+## 📸 Screenshots Section
+When a test fails, screenshots are instantly captured and stored in the `reports/screenshots/` directory. If running in CI/CD, these are uploaded to the GitHub Actions Artifacts tab for easy download by the QA team.
+
+## 🤖 Example AI Diagnosis
+*An example of terminal output when a timeout occurs during a test run:*
+```text
+=======================================================
+❌ TEST FAILED: testInvalidLogin()
+📸 Screenshot saved to: reports/screenshots/testInvalidLogin__.png
+🧠 Asking AI for root-cause analysis (via OpenRouter)...
+
+🤖 AI DIAGNOSIS:
+The timeout occurred because Playwright navigated to the login page but the page did not emit a "load" state within 30 seconds. This is typically caused by slow network conditions or single-page application routing. To resolve, explicitly set `waitUntil: WaitUntilState.DOMCONTENTLOADED` in the navigation call to ensure the page has loaded sufficiently before interacting with elements.
+=======================================================
+```
+
+## ⚠️ Limitations
+- **Sandbox Flakiness:** Tests rely on public sandbox websites (like Heroku), which may occasionally drop requests or throttle IP addresses from shared CI/CD datacenters.
+- **AI Rate Limiting:** The AI diagnosis relies on free-tier OpenRouter models, which may occasionally face rate limiting during high-traffic periods.
+
+## 🚀 Future Improvements
+- **Data-Driven Testing (DDT):** Implement JSON or CSV data providers to execute tests across multiple data sets automatically.
+- **Parallel Execution:** Configure JUnit 5 and Maven Surefire to run UI and API tests in parallel to drastically reduce execution time.
+- **Cross-Browser Matrix:** Expand the CI/CD pipeline to run tests simultaneously across Chromium, Firefox, and WebKit.
