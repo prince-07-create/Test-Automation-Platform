@@ -28,7 +28,7 @@ public class AuthUiTest extends BaseTest {
         // Note: Playwright handles hardcoded waits automatically (auto-waiting).
         // It will automatically wait for the DOM to update before grabbing text!
         String bodyText = page.locator("body").textContent();
-        assertTrue(bodyText.contains("Welcome to the Wrong Area"), 
+        assertTrue(bodyText.contains("Welcome to the Secure Area"), 
                 "Login failed for valid credentials.");
     }
 
