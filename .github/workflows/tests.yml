@@ -15,17 +15,14 @@ jobs:
       uses: actions/checkout@v4
 
     - name: Set up Java 17
-      uses: actions/setup-java@v4
+      uses: actions/setup-java@v5   # Updated to v5 to fix deprecation warning
       with:
         java-version: '17'
         distribution: 'temurin'
         cache: 'maven'
 
-    - name: Install Playwright OS Dependencies
-      run: mvn exec:java -e -D"exec.mainClass=com.microsoft.playwright.CLI" -D"exec.args=install-deps" -D"exec.classpathScope=test"
-
-    - name: Install Playwright Browsers
-      run: mvn exec:java -e -D"exec.mainClass=com.microsoft.playwright.CLI" -D"exec.args=install" -D"exec.classpathScope=test"
+    - name: Install Playwright Browsers and OS Dependencies
+      run: npx playwright install --with-deps   # Bypasses Maven to install safely
 
     - name: Create .env file for CI
       run: |
