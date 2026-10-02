@@ -24,9 +24,10 @@ public class LoginPage {
     }
 
     public void navigateTo(String url) {
-        page.navigate(url, new com.microsoft.playwright.options.NavigateOptions()
-                .setWaitUntil(com.microsoft.playwright.options.WaitUntilState.DOMCONTENTLOADED));
-    }
+    page.navigate(url, new Page.NavigateOptions()
+            .setWaitUntil(com.microsoft.playwright.options.WaitUntilState.DOMCONTENTLOADED));
+}
+
 
     public void login(String username, String password) {
         usernameInput.fill(username);
