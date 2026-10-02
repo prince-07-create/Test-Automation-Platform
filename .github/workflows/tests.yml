@@ -21,8 +21,11 @@ jobs:
         distribution: 'temurin'
         cache: 'maven'
 
-    - name: Install Playwright Browsers and OS Dependencies
-      run: mvn exec:java -e -Dexec.mainClass=com.microsoft.playwright.CLI -Dexec.args="install --with-deps" -Dexec.classpathScope=test
+    - name: Install Playwright OS Dependencies
+      run: mvn exec:java -e -D"exec.mainClass=com.microsoft.playwright.CLI" -D"exec.args=install-deps" -D"exec.classpathScope=test"
+
+    - name: Install Playwright Browsers
+      run: mvn exec:java -e -D"exec.mainClass=com.microsoft.playwright.CLI" -D"exec.args=install" -D"exec.classpathScope=test"
 
     - name: Create .env file for CI
       run: |
