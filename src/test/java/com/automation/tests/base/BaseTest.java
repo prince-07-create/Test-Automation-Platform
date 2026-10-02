@@ -22,7 +22,7 @@ public class BaseTest {
     static void launchBrowserAndApi() {
         playwright = Playwright.create();
         // Headless = false so you can watch the browser in action
-        browser = playwright.chromium().launch(new BrowserType.LaunchOptions().setHeadless(false));
+        browser = playwright.chromium().launch(new BrowserType.LaunchOptions().setHeadless(true));
         
         // Setup API Context for REST automation
         Map<String, String> headers = new HashMap<>();
